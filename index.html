@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Detection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Plant Disease Detection</h1>
+        <p>Upload an image of a plant leaf to detect the disease.</p>
+
+        <input type="file" id="fileInput" accept="image/*">
+        <button id="predictButton">Predict</button>
+
+        <div id="result"></div>
+        <img id="uploadedImage" src="" alt="Uploaded Image" style="display:none;"/>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
