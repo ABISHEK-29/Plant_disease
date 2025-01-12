@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +40,26 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        #chatMessages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.chat-message {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 12px;
+}
+.chat-message.user {
+    align-self: flex-end;
+    background-color: #e6ffe6;
+}
+.chat-message.bot {
+    align-self: flex-start;
+    background-color: #f0f0f0;
+}
+
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -118,9 +139,22 @@
                 <p class="text-gray-600">Our AI model is trained on thousands of plant disease cases for accurate diagnosis.</p>
             </div>
         </div>
+        <!-- Chatbot Section -->
+<div class="fixed bottom-4 right-4 w-80 bg-white rounded-xl shadow-xl p-4">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-green-800">GreenCure Chatbot</h3>
+        <button id="closeChat" class="text-gray-500 hover:text-red-500">&times;</button>
+    </div>
+    <div id="chatMessages" class="h-64 overflow-y-auto bg-gray-100 rounded-lg p-2 mb-4"></div>
+    <div class="flex items-center space-x-2">
+        <input id="chatInput" type="text" placeholder="Type your question..." class="flex-grow border rounded-lg px-4 py-2">
+        <button id="sendMessage" class="bg-green-600 text-white px-4 py-2 rounded-lg">Send</button>
+    </div>
+</div>
+
     </div>
 
-    
+
     <script src="index.js"></script>
 </body>
 </html>
