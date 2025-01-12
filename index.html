@@ -3,21 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Disease Detection</title>
-    <link rel="stylesheet" href="style.css">
+    <title>GreenCure AI - Smart Plant Disease Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #a8e6cf 0%, #1b4332 100%);
+        }
+        .upload-area {
+            border: 2px dashed #1b4332;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #3dd56d;
+            background: rgba(174, 230, 207, 0.1);
+        }
+        .predict-button {
+            background: linear-gradient(45deg, #2d6a4f 0%, #40916c 100%);
+            transition: all 0.3s ease;
+        }
+        .predict-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .loading {
+            animation: pulse 2s infinite;
+        }
+        .logo-text {
+            background: linear-gradient(90deg, #2d6a4f, #40916c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Plant Disease Detection</h1>
-        <p>Upload an image of a plant leaf to detect the disease.</p>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header Section with Logo -->
+        <div class="text-center mb-12">
+            <div class="flex items-center justify-center mb-6">
+                <svg class="w-12 h-12 text-green-700 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+                <h1 class="text-5xl font-bold logo-text">GreenCure AI</h1>
+            </div>
+            <p class="text-gray-600 text-lg">
+                Advanced AI-Powered Plant Disease Detection & Treatment
+            </p>
+        </div>
 
-        <input type="file" id="fileInput" accept="image/*">
-        <button id="predictButton">Predict</button>
+        <!-- Main Content -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <!-- Upload Section -->
+            <div class="upload-area rounded-xl p-8 text-center mb-8">
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <label for="fileInput" class="cursor-pointer">
+                    <div class="flex flex-col items-center space-y-4">
+                        <svg class="w-16 h-16 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p class="text-gray-600 text-lg">Drop your plant's image here or click to upload</p>
+                        <p class="text-sm text-gray-500">For best results, upload a clear image of the affected leaf</p>
+                    </div>
+                </label>
+            </div>
 
-        <div id="result"></div>
-        <img id="uploadedImage" src="" alt="Uploaded Image" style="display:none;"/>
+            <!-- Preview Section -->
+            <div class="flex justify-center mb-8">
+                <img id="uploadedImage" src="" alt="Uploaded Image" class="hidden max-w-full h-auto rounded-lg shadow-lg max-h-96">
+            </div>
+
+            <!-- Action Button -->
+            <div class="text-center">
+                <button id="predictButton" class="predict-button text-white px-8 py-3 rounded-full font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    Get Plant Diagnosis
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div id="result" class="mt-8 text-center text-lg font-medium text-gray-700"></div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="text-green-700 mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Instant Analysis</h3>
+                <p class="text-gray-600">Get real-time disease detection powered by advanced AI technology.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="text-green-700 mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Treatment Plans</h3>
+                <p class="text-gray-600">Receive customized treatment recommendations for identified plant diseases.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="text-green-700 mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Reliable Results</h3>
+                <p class="text-gray-600">Our AI model is trained on thousands of plant disease cases for accurate diagnosis.</p>
+            </div>
+        </div>
     </div>
 
+    
     <script src="index.js"></script>
 </body>
 </html>
